@@ -20,19 +20,53 @@ const SignUp = () => {
 
   //handle user registration
 
-  const handleSubmit =e=>{
-    e.preventDefault()
+  const handleSubmit = (e) => {
+    e.preventDefault();
     const name = e.target.name.value;
     const email = e.target.email.value;
     const password = e.target.password.value;
 
-
     //image upload
-    const image = e.target.image.files[0]
-    console.log(image)
-    return
+    const image = e.target.image.files[0];
+    const formData = new FormData();
+    formData.append("image", image);
 
-  }
+    const url = `https://api.imgbb.com/1/upload?key=${
+      import.meta.env.VITE_IMGBB_KEY
+    }`;
+    fetch(url, {
+      method: "POST",
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then((imageData) => {
+        const imageUrl = imageData.data.display_url;
+
+        createUser(email, password)
+          .then(() => {
+            updateUserProfile(name, imageUrl)
+              .then(() => {
+                toast.success("Sign Up success")
+                navigate(from, { replace: true });
+              })
+              .catch((err) => {
+                setLoading(false);
+                console.log(err.message);
+                toast.error(err.message);
+              });
+          })
+          .catch((err) => {
+            setLoading(false);
+            console.log(err.message);
+            toast.error(err.message);
+          });
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.log(err.message);
+        toast.error(err.message);
+      });
+  };
 
   //google signIn
   const handleGoogleSignIn = () => {
@@ -55,7 +89,7 @@ const SignUp = () => {
           <p className="text-sm text-gray-400">Welcome to AirCNC</p>
         </div>
         <form
-        onSubmit={handleSubmit}
+          onSubmit={handleSubmit}
           noValidate=""
           action=""
           className="space-y-6 ng-untouched ng-pristine ng-valid"
