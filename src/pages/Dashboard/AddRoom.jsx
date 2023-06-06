@@ -57,7 +57,7 @@ const AddRoom = () => {
 
         //post room data to server
         addRoom(roomData)
-          .then((data) => {
+          .then(() => {
             setUploadButtonText("Uploaded!");
             setLoading(false);
             toast.success("Room Added!");
@@ -80,7 +80,7 @@ const AddRoom = () => {
   };
   return (
     //handle form submit
-
+    
     <AddRoomForm
       handleSubmit={handleSubmit}
       loading={loading}
